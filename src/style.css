@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#d3-target{
+  border-radius: 8px;
+  border: 1px solid #4f4f4f;
+  margin: 0 auto;
+}
