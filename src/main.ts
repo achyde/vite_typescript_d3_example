@@ -11,7 +11,7 @@ const pointsGroup = d3.select(d3_target).append('svg').attr('width', `${d3_heigh
 setInterval(() => {
     pointsGroup
         .selectAll<SVGElement, {x:number, y:number}>('circle')
-        .data([{x: Math.floor(Math.random() * 100), y: Math.floor(Math.random() * 100)}])
+        .data([{x: Math.floor(Math.random() * d3_max_value), y: Math.floor(Math.random() * d3_max_value)}])
         .join(
             (enter) => {
                 return enter.append("circle")
