@@ -7,7 +7,7 @@ const d3_target = document.querySelector<HTMLDivElement>('#d3-target')!
 const xScale = d3.scaleLinear().domain([0, max_point_value]).range([ 0, d3_height_width ]);
 const yScale = d3.scaleLinear().domain([0, max_point_value]).range([ d3_height_width, 0 ]);
 const pointsGroup = d3.select(d3_target).append('svg').attr('width', `${d3_height_width}`).attr('height', `${d3_height_width}`).append('g');
-const NUMBER_OF_POINTS = 3;
+const NUMBER_OF_POINTS = 4;
 const points:{x:number, y:number, color:string}[] = [];
 
 const randomColor = () => Math.floor(Math.random()*16777215).toString(16);
@@ -33,8 +33,10 @@ setInterval(() => {
         .join(
             (enter) => {
 
-                enter.append("circle")
-                    .style("stroke", "black")
+                const enterItem = enter.append("circle");
+                enterItem.style("stroke", `red`)
+                    .style("stroke-width", 3)
+                    .style("stroke-dasharray", "2,2")
                     .style("fill", (d) => `#${d.color}`)
                     .attr("r", 0)
                     .attr("cx", (d) => xScale(d.x) )
@@ -43,10 +45,12 @@ setInterval(() => {
                     .duration(500)
                     .attr("r", 5.5);
 
-                return enter;
+                return enterItem;
             },
             (update) => {
-                return update
+                return update.style("stroke", (d) => `#${d.color}`)
+                    .style("stroke-width", 3)
+                    .style("stroke-dasharray", "")
                     .transition()
                     .duration(Math.floor(Math.random() * 800))
                     .ease( d3.easeSin)
@@ -54,7 +58,12 @@ setInterval(() => {
                     .attr("cy", (d) => yScale(d.y) );
             },
             (exit) => {
-                return exit.transition().duration(500).attr("r", 0).remove();
+                return exit.style("stroke", `navy`)
+                    .style("stroke-dasharray", "2,2")
+                    .transition()
+                    .duration(1000)
+                    .attr("r", 0)
+                    .remove();
             }
         )
 }, 1000);
