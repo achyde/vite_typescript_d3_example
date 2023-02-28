@@ -2,29 +2,59 @@ import './style.css'
 import * as d3 from 'd3';
 
 const d3_height_width = 200;
-const d3_max_value = 100;
+const max_point_value = 100;
 const d3_target = document.querySelector<HTMLDivElement>('#d3-target')!
-const xScale = d3.scaleLinear().domain([0, d3_max_value]).range([ 0, d3_height_width ]);
-const yScale = d3.scaleLinear().domain([0, d3_max_value]).range([ d3_height_width, 0 ]);
+const xScale = d3.scaleLinear().domain([0, max_point_value]).range([ 0, d3_height_width ]);
+const yScale = d3.scaleLinear().domain([0, max_point_value]).range([ d3_height_width, 0 ]);
 const pointsGroup = d3.select(d3_target).append('svg').attr('width', `${d3_height_width}`).attr('height', `${d3_height_width}`).append('g');
+const NUMBER_OF_POINTS = 3;
+const points:{x:number, y:number, color:string}[] = [];
 
+const randomColor = () => Math.floor(Math.random()*16777215).toString(16);
 setInterval(() => {
+
+    //update the points position so the move around
+    points.forEach((item) => {
+        item.x = Math.floor(Math.random() * 100)
+        item.y = Math.floor(Math.random() * 100)
+    });
+
+    //add a new point at random position
+    points.push({x: Math.floor(Math.random() * 100), y: Math.floor(Math.random() * 100), color: randomColor()});
+
+    //remove the first point if we have more than NUMBER_OF_POINTS, rolling the array
+    if(points.length > NUMBER_OF_POINTS) {
+        points.shift();
+    }
+
     pointsGroup
-        .selectAll<SVGElement, {x:number, y:number}>('circle')
-        .data([{x: Math.floor(Math.random() * 100), y: Math.floor(Math.random() * 100)}])
+        .selectAll<SVGElement, {x:number, y:number, color:string}>('circle')
+        .data(points, (d) => JSON.stringify(d))
         .join(
             (enter) => {
-                return enter.append("circle")
+
+                enter.append("circle")
+                    .style("stroke", "black")
+                    .style("fill", (d) => `#${d.color}`)
+                    .attr("r", 0)
                     .attr("cx", (d) => xScale(d.x) )
                     .attr("cy", (d) => yScale(d.y) )
-                    .attr("r", 5.5)
-                    .style("stroke", "black")
-                    .style("fill", "#69b3a2");
+                    .transition()
+                    .duration(500)
+                    .attr("r", 5.5);
+
+                return enter;
             },
             (update) => {
                 return update
+                    .transition()
+                    .duration(Math.floor(Math.random() * 800))
+                    .ease( d3.easeSin)
                     .attr("cx", (d) => xScale(d.x) )
                     .attr("cy", (d) => yScale(d.y) );
+            },
+            (exit) => {
+                return exit.transition().duration(500).attr("r", 0).remove();
             }
         )
 }, 1000);
